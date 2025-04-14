@@ -1,0 +1,24 @@
+add
+INSERT INTO contacts (name, phone, email, address, group_name)
+VALUES ('penn', '56-98605678', 'penn@example.com', 'juvence', 'schoolmate');
+
+node cli.mjs add --name "Jude" --phone "09012345678" --email "jude@gmail.com" --address "Lagos" --group "Friends"
+
+
+list all contacts
+SELECT * FROM contacts;
+
+
+search
+node cli.mjs search --name "Jude"
+
+
+delete
+node cli.mjs delete --id 1m
+
+
+update contact 
+node cli.mjs update --id 1 --phone "08099999999" --email "updated@mail.com"
+
+
+

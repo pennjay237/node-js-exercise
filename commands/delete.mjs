@@ -1,5 +1,8 @@
-//Delete contact by ID
-async function remove({ id }) {
-  await db.query('DELETE FROM contacts WHERE id = $1', [id]);
-  console.log(chalk.red(`Deleted contact with ID ${id}`));
+import { client } from '../db.mjs';
+
+export default async function deleteContact(options) {
+  const res = await client.query('DELETE FROM contacts WHERE id = $1 RETURNING *', [options.id]);
+  if (res.rows.length === 0) return console.log('Contact not found.');
+  console.log('Deleted Contact:');
+  console.table(res.rows);
 }
