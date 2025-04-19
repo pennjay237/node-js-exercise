@@ -1,16 +1,14 @@
-//db.mjs
-import dotenv from 'dotenv';
-dotenv.config();
-
 import pkg from 'pg';
 const { Pool } = pkg;
 
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  user: 'postgres',
+  host: 'localhost',
+  database: 'penndb',
+  password: 'your_password',
+  port: 5432,
 });
 
-export { pool };
+export default {
+  query: (text, params) => pool.query(text, params),
+};

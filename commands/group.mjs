@@ -1,13 +1,11 @@
-import { client } from '../db.mjs';
+import pool from '../db.mjs';
+import consoleTable from 'console.table';
 
-export default async function assignGroup(options) {
-  const { id, group } = options;
-
-  const result = await client.query(
-    'UPDATE contacts SET group_name = $1 WHERE id = $2 RETURNING *',
-    [group, id]
+try {
+  const { rows } = await pool.query(
+    'SELECT LEFT(name, 1) AS group_letter, COUNT(*) AS total FROM contacts GROUP BY group_letter ORDER BY group_letter'
   );
-
-  console.log('Group updated:');
-  console.table(result.rows);
+  console.table(rows);
+} catch (err) {
+  console.error(' Error fetching groups:', err.message);
 }

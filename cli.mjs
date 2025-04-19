@@ -1,61 +1,49 @@
-import { Command } from 'commander';
-// import chalk from 'chalk';
+#!/usr/bin/env node
+import inquirer from 'inquirer';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-import AddContact from './commands/add.mjs';
-import ListContacts from './commands/list.mjs';
-import SearchContact from './commands/search.mjs';
-import UpdateContact from './commands/update.mjs';
-import DeleteContact from './commands/delete.mjs';
-import AddToGroup from './commands/group.mjs';
+const run = promisify(exec);
 
-const program = new Command();
+const menu = async () => {
+  const { action } = await inquirer.prompt({
+    type: 'list',
+    name: 'action',
+    message: '✔ Choose an action:',
+    choices: [
+      'Add Contact',
+      'List Contacts',
+      'Search Contact',
+      'Edit Contact',
+      'Delete Contact',
+      'View Groups',
+      'Exit',
+    ],
+  });
 
-program
-  .name('contacts')
-  .description('CLI to manage personal contacts')
-  .version('1.0.0');
+  const cmdMap = {
+    'Add Contact': 'add',
+    'List Contacts': 'list',
+    'Search Contact': 'search',
+    'Edit Contact': 'edit',
+    'Delete Contact': 'delete',
+    'View Groups': 'groups',
+  };
 
-program
-  .command('add')
-  .description('Add a new contact')
-  .requiredOption('--name <name>')
-  .option('--phone <phone>')
-  .option('--email <email>')
-  .option('--address <address>')
-  .action(AddContact);
+  if (action === 'Exit') {
+    console.log(' Exiting...');
+    process.exit();
+  }
 
-program
-  .command('list')
-  .description('List all contacts')
-  .action(ListContacts);
+  try {
+    const commandPath = `commands/${cmdMap[action]}.mjs`;
+    const { stdout } = await run(`node ${commandPath}`);
+    console.log(stdout);
+  } catch (err) {
+    console.error(' Error running command:', err.message);
+  }
 
-program
-  .command('search')
-  .description('Search contacts by name')
-  .requiredOption('--name <name>')
-  .action(SearchContact);
+  menu(); // loop back
+};
 
-program
-  .command('update')
-  .description('Update contact')
-  .requiredOption('--id <id>')
-  .option('--name <name>')
-  .option('--phone <phone>')
-  .option('--email <email>')
-  .option('--address <address>')
-  .action(UpdateContact);
-
-program
-  .command('delete')
-  .description('Delete contact')
-  .requiredOption('--id <id>')
-  .action(DeleteContact);
-
-program
-  .command('group')
-  .description('Add contact to group')
-  .requiredOption('--id <contactId>')
-  .requiredOption('--group <groupName>')
-  .action(AddToGroup);
-
-program.parse();
+menu();

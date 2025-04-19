@@ -1,6 +1,9 @@
-import { client } from '../db.mjs';
+import pool from '../db.mjs';
+import consoleTable from 'console.table';
 
-export default async function listContacts() {
-  const res = await client.query('SELECT * FROM contacts ORDER BY id');
-  console.table(res.rows);
+try {
+  const { rows } = await pool.query('SELECT * FROM contacts');
+  console.table(rows);
+} catch (err) {
+  console.error(' Error:', err.message);
 }

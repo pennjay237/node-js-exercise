@@ -1,8 +1,13 @@
-import { client } from '../db.mjs';
+import inquirer from 'inquirer';
+import pool from '../db.mjs';
 
-export default async function deleteContact(options) {
-  const res = await client.query('DELETE FROM contacts WHERE id = $1 RETURNING *', [options.id]);
-  if (res.rows.length === 0) return console.log('Contact not found.');
-  console.log('Deleted Contact:');
-  console.table(res.rows);
+const { id } = await inquirer.prompt([
+  { name: 'id', message: 'Enter ID of contact to delete:' }
+]);
+
+try {
+  await pool.query('DELETE FROM contacts WHERE id = $1', [id]);
+  console.log(' Contact deleted successfully!');
+} catch (err) {
+  console.error(' Error deleting contact:', err.message);
 }
