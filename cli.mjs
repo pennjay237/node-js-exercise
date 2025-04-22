@@ -1,49 +1,48 @@
-#!/usr/bin/env node
 import inquirer from 'inquirer';
+import { createTable } from './db/db.mjs';
 import { exec } from 'child_process';
-import { promisify } from 'util';
+import util from 'util';
 
-const run = promisify(exec);
+const execProm = util.promisify(exec);
 
-const menu = async () => {
-  const { action } = await inquirer.prompt({
-    type: 'list',
-    name: 'action',
-    message: '✔ Choose an action:',
-    choices: [
-      'Add Contact',
-      'List Contacts',
-      'Search Contact',
-      'Edit Contact',
-      'Delete Contact',
-      'View Groups',
-      'Exit',
-    ],
-  });
+async function mainMenu() {
+  await createTable();
 
-  const cmdMap = {
+  const { action } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
+      message: 'Choose an action:',
+      choices: [
+        'Add Contact',
+        'List Contacts',
+        'Search Contact',
+        'Edit Contact',
+        'Delete Contact',
+        'Group Contacts',
+        'Exit',
+      ],
+    },
+  ]);
+
+  const commandMap = {
     'Add Contact': 'add',
     'List Contacts': 'list',
     'Search Contact': 'search',
     'Edit Contact': 'edit',
     'Delete Contact': 'delete',
-    'View Groups': 'groups',
+    'Group Contact': 'group'
   };
 
   if (action === 'Exit') {
-    console.log(' Exiting...');
+    console.log(' Goodbye!');
     process.exit();
   }
 
-  try {
-    const commandPath = `commands/${cmdMap[action]}.mjs`;
-    const { stdout } = await run(`node ${commandPath}`);
-    console.log(stdout);
-  } catch (err) {
-    console.error(' Error running command:', err.message);
-  }
+  const cmd = `node commands/${commandMap[action]}.mjs`;
+  await execProm(cmd);
 
-  menu(); // loop back
-};
+  mainMenu(); // Return to menu
+}
 
-menu();
+mainMenu();

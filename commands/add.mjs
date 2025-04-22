@@ -1,30 +1,34 @@
 import inquirer from 'inquirer';
-import db from '../db.mjs';
+import { pool } from '../db/db.mjs';
 
-const addContact = async () => {
-  const { name, email, phone, address } = await inquirer.prompt([
-    { name: 'name', message: 'Name:' },
-    { name: 'email', message: 'Email:' },
-    { name: 'phone', message: 'Phone (start with 2376):' },
-    { name: 'address', message: 'Address:' },
+export async function addContact() {
+  const answers = await inquirer.prompt([
+    { name: 'name', message: 'Enter name:' },
+    { name: 'email', message: 'Enter email:' },
+    { name: 'phone', message: 'Enter phone (starting with 2376):' },
+    { name: 'address', message: 'Enter address:' },
   ]);
 
-  // Validation
-  if (!/^2376\d{8}$/.test(phone)) {
-    console.log(' Phone must start with 2376 and have 12 digits');
+  // Validate phone
+  if (!/^2376\d{8}$/.test(answers.phone)) {
+    console.log(' Phone must start with 2376 and be 12 digits');
     return;
   }
-  if (!/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+
+  // Validate email
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(answers.email)) {
     console.log(' Invalid email format');
     return;
   }
 
-  await db.query(
-    'INSERT INTO contacts (name, email, phone, address) VALUES ($1, $2, $3, $4)',
-    [name, email, phone, address]
-  );
-
-  console.log('Contact added successfully');
-};
-
-addContact();
+  // Insert into DB
+  try {
+    await pool.query(
+      'INSERT INTO contacts (name, email, phone, address) VALUES ($1, $2, $3, $4)',
+      [answers.name, answers.email, answers.phone, answers.address]
+    );
+    console.log(' Contact added!');
+  } catch (err) {
+    console.error(' Failed to add contact:', err.message);
+  }
+}
