@@ -1,6 +1,6 @@
 # 📇 Contact Manager CLI
 
-A simple and powerful **Node.js CLI tool** to manage your personal contacts via the terminal. It allows you to add, list, search, update, delete contacts, and assign them to groups.
+A simple and powerful **Node.js CLI tool** to manage your personal contacts through the terminal. It allows you to add, list, search, update, delete contacts, and assign them to groups.
 
  Features
 
@@ -9,8 +9,7 @@ A simple and powerful **Node.js CLI tool** to manage your personal contacts via 
 - Search contacts by name
 - Update existing contact details
 - Delete contacts
-- Organize contacts into groups (Bonus)
-- Validates:
+- Organize contacts into groups
 - Unique phone numbers and emails
 - Proper email format
 - Phone numbers must start with `2376` and be followed by exactly 8 digits
