@@ -1,12 +1,21 @@
+// cli.mjs
 import inquirer from 'inquirer';
-import { createTable } from './db/db.mjs';
-import { exec } from 'child_process';
-import util from 'util';
+import { createTables } from './db/db.mjs';
+import { spawn } from 'child_process';
 
-const execProm = util.promisify(exec);
+async function runScript(scriptPath) {
+  return new Promise((resolve, reject) => {
+    const child = spawn('node', [scriptPath], { stdio: 'inherit' });
+
+    child.on('exit', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`Script exited with code ${code}`));
+    });
+  });
+}
 
 async function mainMenu() {
-  await createTable();
+  await createTables();
 
   const { action } = await inquirer.prompt([
     {
@@ -19,30 +28,33 @@ async function mainMenu() {
         'Search Contact',
         'Edit Contact',
         'Delete Contact',
-        'Group Contacts',
         'Exit',
       ],
     },
   ]);
 
-  const commandMap = {
-    'Add Contact': 'add',
-    'List Contacts': 'list',
-    'Search Contact': 'search',
-    'Edit Contact': 'edit',
-    'Delete Contact': 'delete',
-    'Group Contact': 'group'
-  };
-
-  if (action === 'Exit') {
-    console.log(' Goodbye!');
-    process.exit();
+  switch (action) {
+    case 'Add Contact':
+      await runScript('./commands/add.mjs');
+      break;
+    case 'List Contacts':
+      await runScript('./commands/list.mjs');
+      break;
+    case 'Search Contact':
+      await runScript('./commands/search.mjs');
+      break;
+    case 'Edit Contact':
+      await runScript('./commands/edit.mjs');
+      break;
+    case 'Delete Contact':
+      await runScript('./commands/delete.mjs');
+      break;
+    case 'Exit':
+      console.log('👋 Goodbye!');
+      process.exit();
   }
 
-  const cmd = `node commands/${commandMap[action]}.mjs`;
-  await execProm(cmd);
-
-  mainMenu(); // Return to menu
+  await mainMenu();
 }
 
 mainMenu();

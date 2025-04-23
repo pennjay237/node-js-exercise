@@ -3,14 +3,14 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 export const pool = new Pool({
-  user: 'penn',       
+  user: 'penn',          
   host: 'localhost',
-  database: 'penndb', 
+  database: 'penndb',    
   password: 'pennjude',
   port: 5432,
 });
 
-export async function createTable() {
+export async function createTables() {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS contacts (
@@ -21,8 +21,8 @@ export async function createTable() {
         address TEXT
       )
     `);
-    console.log(' Contact table created or verified.');
+    console.log(' Tables checked/created.');
   } catch (err) {
-    console.error(' Error creating table:', err.message);
+    console.error(' Error creating tables:', err.message);
   }
 }

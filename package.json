@@ -5,5 +5,23 @@
     "console.table": "^0.10.0",
     "inquirer": "^9.3.7",
     "pg": "^8.14.1"
-  }
+  },
+  "name": "contact-manager",
+  "version": "1.0.0",
+  "description": "A simple and powerful **Node.js CLI tool** to manage your personal contacts via the terminal. It allows you to add, list, search, update, delete contacts, and assign them to groups.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pennjay237/node-js-exercise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pennjay237/node-js-exercise/issues"
+  },
+  "homepage": "https://github.com/pennjay237/node-js-exercise#readme"
 }
