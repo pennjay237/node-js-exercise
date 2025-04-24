@@ -1,9 +1,18 @@
+// cli.mjs
 import inquirer from 'inquirer';
 import { createTables } from './db/db.mjs';
-import { exec } from 'child_process';
-import util from 'util';
+import { spawn } from 'child_process';
 
-const execProm = util.promisify(exec);
+async function runScript(scriptPath) {
+  return new Promise((resolve, reject) => {
+    const child = spawn('node', [scriptPath], { stdio: 'inherit' });
+
+    child.on('exit', (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`Script exited with code ${code}`));
+    });
+  });
+}
 
 async function mainMenu() {
   await createTables();
@@ -12,44 +21,40 @@ async function mainMenu() {
     {
       type: 'list',
       name: 'action',
-      message: 'Choose an action using your arrow keys:',
+      message: 'Choose an action:',
       choices: [
         'Add Contact',
         'List Contacts',
         'Search Contact',
         'Edit Contact',
         'Delete Contact',
-        'Group Management',
-        'Exit'
+        'Exit',
       ],
     },
   ]);
 
   switch (action) {
     case 'Add Contact':
-      await execProm('node commands/add.mjs');
+      await runScript('./commands/add.mjs');
       break;
     case 'List Contacts':
-      await execProm('node commands/list.mjs');
+      await runScript('./commands/list.mjs');
       break;
     case 'Search Contact':
-      await execProm('node commands/search.mjs');
+      await runScript('./commands/search.mjs');
       break;
     case 'Edit Contact':
-      await execProm('node commands/edit.mjs');
+      await runScript('./commands/edit.mjs');
       break;
     case 'Delete Contact':
-      await execProm('node commands/delete.mjs');
-      break;
-    case 'Group Management':
-      await execProm('node commands/group.mjs');
+      await runScript('./commands/delete.mjs');
       break;
     case 'Exit':
-      console.log('Goodbye thanks for using penn jays cli !');
+      console.log('👋 Goodbye!');
       process.exit();
   }
 
-  mainMenu(); 
+  await mainMenu();
 }
 
 mainMenu();
