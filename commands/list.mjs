@@ -1,7 +1,12 @@
-// List contacts
-async function list() {
-    const res = await db.query('SELECT * FROM contacts');
-    res.rows.forEach(c => {
-      console.log(`${chalk.yellow(c.id)}. ${c.name} - 📞 ${c.phone} - 📧 ${c.email}`);
-    });
+import { pool } from '../db/db.mjs';
+
+async function listContacts() {
+  try {
+    const res = await pool.query('SELECT * FROM contacts');
+    console.table(res.rows);
+  } catch (err) {
+    console.error('Error listing contacts:', err.message);
   }
+}
+
+listContacts();
